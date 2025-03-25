@@ -63,6 +63,7 @@ const CountrySelector = ({ selectedCountries, onCountriesChange }: CountrySelect
         }));
         setCountries(countriesWithContinent);
       } catch (err) {
+        console.error('Error fetching countries:', err);
         setError('Failed to load countries');
       } finally {
         setLoading(false);

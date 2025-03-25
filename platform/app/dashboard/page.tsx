@@ -147,6 +147,7 @@ export default function Dashboard() {
       const countries = await apiService.getCountries();
       dispatch({ type: 'SET_AVAILABLE_COUNTRIES', payload: countries });
     } catch (err) {
+      console.error('Error fetching countries:', err);
       dispatch({ 
         type: 'SET_ERROR', 
         payload: 'Failed to load countries' 
@@ -167,6 +168,7 @@ export default function Dashboard() {
       const data = await apiService.getPopulationData(state.selectedCountries);
       dispatch({ type: 'SET_POPULATION_DATA', payload: data });
     } catch (err) {
+      console.error('Error fetching population data:', err);
       dispatch({ 
         type: 'SET_ERROR', 
         payload: 'Failed to load population data' 
@@ -191,6 +193,7 @@ export default function Dashboard() {
         dispatch({ type: 'SET_SELECTED_YEAR', payload: parseInt(year) });
       }
     } catch (err) {
+      console.error('Error fetching growth metrics:', err);
       dispatch({ 
         type: 'SET_ERROR', 
         payload: 'Failed to load growth metrics' 
@@ -217,6 +220,7 @@ export default function Dashboard() {
       const populationTrends = await Promise.all(trendsPromises);
       return populationTrends;
     } catch (err) {
+      console.error('Error fetching population trends:', err);
       dispatch({ 
         type: 'SET_ERROR', 
         payload: 'Failed to load population trends' 

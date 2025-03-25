@@ -7,20 +7,17 @@ interface CountrySelectProps {
   maxSelections?: number;
 }
 
-// Define state interface
 interface CountryState {
   countries: Country[];
   isLoading: boolean;
   error: string | null;
 }
 
-// Define action types
 type CountryAction = 
   | { type: 'FETCH_START' }
   | { type: 'FETCH_SUCCESS'; payload: Country[] }
   | { type: 'FETCH_ERROR'; payload: string };
 
-// Reducer function
 function countryReducer(state: CountryState, action: CountryAction): CountryState {
   switch (action.type) {
     case 'FETCH_START':
@@ -48,14 +45,12 @@ const CountrySelect = ({
   onCountriesChange,
   maxSelections = 5,
 }: CountrySelectProps) => {
-  // Use useReducer instead of multiple useState calls
   const [state, dispatch] = useReducer(countryReducer, {
     countries: [],
     isLoading: true,
     error: null
   });
 
-  // Memoized fetch countries function
   const fetchCountries = useCallback(async () => {
     dispatch({ type: 'FETCH_START' });
     try {
@@ -69,12 +64,10 @@ const CountrySelect = ({
     }
   }, []);
 
-  // Use useEffect with memoized fetch function
   useEffect(() => {
     fetchCountries();
   }, [fetchCountries]);
 
-  // Memoized country change handler
   const handleCountryChange = useCallback((countryCode: string) => {
     if (selectedCountries.includes(countryCode)) {
       onCountriesChange(selectedCountries.filter(code => code !== countryCode));

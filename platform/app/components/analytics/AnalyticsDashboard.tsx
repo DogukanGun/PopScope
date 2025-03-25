@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback, useReducer } from 'react';
+import { useEffect, useMemo, useCallback, useReducer } from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -11,7 +11,7 @@ import {
   Legend,
   ArcElement
 } from 'chart.js';
-import { Line, Bar, Pie } from 'react-chartjs-2';
+import { Bar, Pie } from 'react-chartjs-2';
 import apiService, { PopulationTrend, AnalyticsData } from '@/app/lib/services/api';
 import { motion } from 'framer-motion';
 
@@ -22,6 +22,28 @@ interface AnalyticsDashboardProps {
 interface YearRange {
   startYear: number;
   endYear: number;
+}
+
+interface FetchSuccessPayload {
+  data: AnalyticsData;
+  growthTrends: { [key: string]: PopulationTrend[] };
+}
+
+type AnalyticsAction =
+  | { type: 'FETCH_START' }
+  | { type: 'FETCH_SUCCESS'; payload: FetchSuccessPayload }
+  | { type: 'FETCH_ERROR'; payload: string }
+  | { type: 'UPDATE_YEAR_RANGE'; payload: YearRange };
+
+interface RegionalData {
+  region_name: string;
+  total_population: number;
+}
+
+interface TopCountryData {
+  country_name: string;
+  value: number;
+  growth_rate?: number; // Optional if not always present
 }
 
 ChartJS.register(
@@ -36,7 +58,6 @@ ChartJS.register(
   ArcElement
 );
 
-// Define a more comprehensive state structure
 interface AnalyticsState {
   data: AnalyticsData | null;
   growthTrends: { [key: string]: PopulationTrend[] };
@@ -45,8 +66,7 @@ interface AnalyticsState {
   yearRange: YearRange;
 }
 
-// Reducer to manage complex state logic
-function analyticsReducer(state: AnalyticsState, action: any): AnalyticsState {
+function analyticsReducer(state: AnalyticsState, action: AnalyticsAction): AnalyticsState {
   switch (action.type) {
     case 'FETCH_START':
       return { ...state, isLoading: true, error: null };
@@ -68,7 +88,6 @@ function analyticsReducer(state: AnalyticsState, action: any): AnalyticsState {
 }
 
 const AnalyticsDashboard = ({ selectedYear = 2022 }: AnalyticsDashboardProps) => {
-  // Use useReducer for more complex state management
   const [state, dispatch] = useReducer(analyticsReducer, {
     data: null,
     growthTrends: {},
@@ -80,7 +99,6 @@ const AnalyticsDashboard = ({ selectedYear = 2022 }: AnalyticsDashboardProps) =>
     }
   });
 
-  // Memoize color arrays to prevent unnecessary re-renders
   const colorScheme = useMemo(() => {
     const vibrantColors = [
       'rgba(255, 99, 132, 0.8)',
@@ -96,13 +114,12 @@ const AnalyticsDashboard = ({ selectedYear = 2022 }: AnalyticsDashboardProps) =>
     };
   }, []);
 
-  // Memoized data preparation functions
-  const prepareChartData = useCallback((dataSource: any[], labelKey: string, valueKey: string) => {
+  const prepareChartData = useCallback((dataSource: (RegionalData | TopCountryData)[], labelKey: string, valueKey: string) => {
     return {
-      labels: dataSource.map(item => item[labelKey]),
+      labels: dataSource.map(item => item[labelKey as keyof (RegionalData | TopCountryData)] as string),
       datasets: [{
         label: 'Data',
-        data: dataSource.map(item => item[valueKey]),
+        data: dataSource.map(item => item[valueKey as keyof (RegionalData | TopCountryData)] as number),
         backgroundColor: colorScheme.colors,
         borderColor: colorScheme.borders,
         borderWidth: 1,
@@ -110,13 +127,11 @@ const AnalyticsDashboard = ({ selectedYear = 2022 }: AnalyticsDashboardProps) =>
     };
   }, [colorScheme]);
 
-  // Efficient data fetching with consolidated error handling
   const fetchData = useCallback(async () => {
     dispatch({ type: 'FETCH_START' });
     try {
       const analytics = await apiService.getAnalyticsDashboard(selectedYear);
       
-      // Fetch growth trends more efficiently
       const trendsPromises = analytics.top_populated_countries
         .slice(0, 5)
         .map(async (country) => {
@@ -142,6 +157,7 @@ const AnalyticsDashboard = ({ selectedYear = 2022 }: AnalyticsDashboardProps) =>
         } 
       });
     } catch (err) {
+      console.error('Error fetching analytics data:', err);
       dispatch({ 
         type: 'FETCH_ERROR', 
         payload: 'Failed to load analytics data' 
@@ -149,12 +165,10 @@ const AnalyticsDashboard = ({ selectedYear = 2022 }: AnalyticsDashboardProps) =>
     }
   }, [selectedYear, state.yearRange]);
 
-  // Use useEffect with more precise dependencies
   useEffect(() => {
     fetchData();
   }, [fetchData]);
 
-  // Memoize chart data to prevent unnecessary re-renders
   const regionData = useMemo(() => 
     state.data ? prepareChartData(state.data.regional_data, 'region_name', 'total_population') : 
     { labels: [], datasets: [] }, 

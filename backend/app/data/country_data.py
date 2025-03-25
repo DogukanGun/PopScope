@@ -1,11 +1,11 @@
 import pandas as pd
 from typing import List, Dict, Optional
-import numpy as np
+import os
 
 class CountryData:
     def __init__(self):
         # Read the TSV file
-        self.df = pd.read_csv('country_development.tsv', sep='\t')
+        self.df = pd.read_csv(os.getenv("FILE_PATH"), sep='\t')
         # Convert year columns to numeric, replacing non-numeric values with NaN
         year_columns = [str(year) for year in range(1960, 2024)]
         for col in year_columns:

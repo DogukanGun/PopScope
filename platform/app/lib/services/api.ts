@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:8080/api';
+const API_BASE_URL = process.env.API_BASE_URL || 'https://api.dogukangun.de/api';
 
 export interface Country {
   country_name: string;
@@ -66,7 +66,7 @@ class ApiService {
   }
 
   async getCountries(): Promise<Country[]> {
-    const response = await axios.get(`${API_BASE_URL}/countries`);
+    const response = await axios.get(`${API_BASE_URL}/countries/`);
     return response.data;
   }
 

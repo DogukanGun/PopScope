@@ -307,7 +307,7 @@ export default function Dashboard() {
                   <button
                     key={continent.name}
                     onClick={() => dispatch({ type: 'SET_SELECTED_CONTINENT', payload: continent.name })}
-                    className={`px-4 py-2 rounded-lg border ${continent.color} ${
+                    className={`px-3 py-1 md:px-4 md:py-2 text-sm md:text-base rounded-lg border ${continent.color} ${
                       state.selectedContinent === continent.name ? 'ring-2 ring-offset-2 ring-offset-slate-800' : ''
                     }`}
                   >
@@ -322,9 +322,9 @@ export default function Dashboard() {
                   placeholder="Search countries..."
                   value={state.searchQuery}
                   onChange={(e) => dispatch({ type: 'SET_SEARCH_QUERY', payload: e.target.value })}
-                  className="w-full px-4 py-2 pl-10 bg-slate-700/50 text-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                  className="w-full px-3 py-2 md:px-4 md:py-2 pl-8 md:pl-10 text-sm md:text-base bg-slate-700/50 text-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                 />
-                <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+                <MagnifyingGlassIcon className="absolute left-2 md:left-3 top-1/2 -translate-y-1/2 h-4 w-4 md:h-5 md:w-5 text-slate-400" />
               </div>
 
               <div className="flex flex-wrap gap-2">
@@ -494,23 +494,25 @@ export default function Dashboard() {
             initial="initial"
             animate="animate"
             variants={fadeInUp}
-            className="bg-slate-800 p-6 rounded-2xl shadow-xl border border-slate-700"
+            className="bg-slate-800 p-4 md:p-6 rounded-2xl shadow-xl border border-slate-700"
           >
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-semibold text-slate-200">
+            <div className="flex flex-col md:flex-row justify-between items-center mb-4 md:mb-6">
+              <h2 className="text-lg md:text-xl font-semibold text-slate-200 mb-2 md:mb-0">
                 Population Trends Over Time
               </h2>
               <button 
                 onClick={toggleAdditionalGraphs}
-                className="px-4 py-2 bg-slate-700 text-slate-200 rounded-lg hover:bg-slate-600 transition-colors"
+                className="px-3 py-2 md:px-4 md:py-2 text-sm md:text-base bg-slate-700 text-slate-200 rounded-lg hover:bg-slate-600 transition-colors"
               >
                 {showAdditionalGraphs ? 'Hide' : 'Show'} Additional Insights
               </button>
             </div>
-            <PopulationChart
-              data={state.populationData}
-              onDataPointClick={handleDataPointClick}
-            />
+            <div className="w-full overflow-x-auto">
+              <PopulationChart
+                data={state.populationData}
+                onDataPointClick={handleDataPointClick}
+              />
+            </div>
           </motion.div>
           
           {showAdditionalGraphs && (
@@ -519,52 +521,54 @@ export default function Dashboard() {
                 initial="initial"
                 animate="animate"
                 variants={fadeInUp}
-                className="bg-slate-800 p-6 rounded-2xl shadow-xl border border-slate-700"
+                className="bg-slate-800 p-4 md:p-6 rounded-2xl shadow-xl border border-slate-700"
               >
-                <h2 className="text-xl font-semibold text-slate-200 mb-6">
+                <h2 className="text-lg md:text-xl font-semibold text-slate-200 mb-4 md:mb-6">
                   Population Growth Rate Trends
                 </h2>
-                <PopulationChart
-                  data={populationTrends.map(country => ({
-                    country_name: country.countryName,
-                    country_code: country.countryCode,
-                    population: country.trends.reduce((acc, trend) => ({
-                      ...acc,
-                      [trend.year]: trend.growth_rate || 0
-                    }), {})
-                  }))}
-                  isGrowthRate={true}
-                />
+                <div className="w-full overflow-x-auto">
+                  <PopulationChart
+                    data={populationTrends.map(country => ({
+                      country_name: country.countryName,
+                      country_code: country.countryCode,
+                      population: country.trends.reduce((acc, trend) => ({
+                        ...acc,
+                        [trend.year]: trend.growth_rate || 0
+                      }), {})
+                    }))}
+                    isGrowthRate={true}
+                  />
+                </div>
               </motion.div>
 
               <motion.div 
                 initial="initial"
                 animate="animate"
                 variants={fadeInUp}
-                className="bg-slate-800 p-6 rounded-2xl shadow-xl border border-slate-700"
+                className="bg-slate-800 p-4 md:p-6 rounded-2xl shadow-xl border border-slate-700"
               >
-                <h2 className="text-xl font-semibold text-slate-200 mb-6">
+                <h2 className="text-lg md:text-xl font-semibold text-slate-200 mb-4 md:mb-6">
                   Comparative Population Metrics
                 </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {state.populationData.map(country => (
                     <div 
                       key={country.country_code} 
-                      className="bg-slate-700/50 p-4 rounded-lg"
+                      className="bg-slate-700/50 p-3 md:p-4 rounded-lg"
                     >
-                      <h3 className="text-lg font-semibold text-slate-200 mb-2">
+                      <h3 className="text-base md:text-lg font-semibold text-slate-200 mb-2">
                         {country.country_name}
                       </h3>
                       <div className="space-y-2">
                         <div>
-                          <p className="text-sm text-slate-400">Latest Population</p>
-                          <p className="text-xl font-bold text-slate-200">
+                          <p className="text-xs md:text-sm text-slate-400">Latest Population</p>
+                          <p className="text-base md:text-xl font-bold text-slate-200">
                             {Object.values(country.population).pop()?.toLocaleString() || 'N/A'}
                           </p>
                         </div>
                         <div>
-                          <p className="text-sm text-slate-400">Population Change</p>
-                          <p className="text-xl font-bold text-slate-200">
+                          <p className="text-xs md:text-sm text-slate-400">Population Change</p>
+                          <p className="text-base md:text-xl font-bold text-slate-200">
                             {(() => {
                               const values = Object.values(country.population);
                               const change = values[values.length - 1] - values[0];

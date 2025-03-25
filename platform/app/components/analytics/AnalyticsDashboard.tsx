@@ -211,30 +211,30 @@ const AnalyticsDashboard = ({ selectedYear = 2022 }: AnalyticsDashboardProps) =>
       className="p-6 space-y-6"
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-slate-800/50 p-6 rounded-lg shadow-lg">
-          <h3 className="text-xl font-semibold mb-4 text-slate-200">Key Statistics</h3>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-slate-700/50 p-4 rounded-lg">
-              <p className="text-sm text-slate-400">Total Population</p>
-              <p className="text-2xl font-bold text-slate-200">
+        <div className="bg-slate-800/50 p-4 md:p-6 rounded-lg shadow-lg">
+          <h3 className="text-lg md:text-xl font-semibold mb-3 md:mb-4 text-slate-200">Key Statistics</h3>
+          <div className="grid grid-cols-2 gap-3 md:gap-4">
+            <div className="bg-slate-700/50 p-3 md:p-4 rounded-lg flex flex-col justify-between">
+              <p className="text-xs md:text-sm text-slate-400 mb-1">Total Population</p>
+              <p className="text-base md:text-2xl font-bold text-slate-200 truncate">
                 {state.data.total_population.toLocaleString()}
               </p>
             </div>
-            <div className="bg-slate-700/50 p-4 rounded-lg">
-              <p className="text-sm text-slate-400">Average Growth Rate</p>
-              <p className="text-2xl font-bold text-slate-200">
+            <div className="bg-slate-700/50 p-3 md:p-4 rounded-lg flex flex-col justify-between">
+              <p className="text-xs md:text-sm text-slate-400 mb-1">Average Growth Rate</p>
+              <p className="text-base md:text-2xl font-bold text-slate-200">
                 {state.data.average_growth_rate.toFixed(2)}%
               </p>
             </div>
-            <div className="bg-slate-700/50 p-4 rounded-lg">
-              <p className="text-sm text-slate-400">Population Distribution</p>
-              <p className="text-2xl font-bold text-slate-200">
+            <div className="bg-slate-700/50 p-3 md:p-4 rounded-lg flex flex-col justify-between">
+              <p className="text-xs md:text-sm text-slate-400 mb-1">Population Distribution</p>
+              <p className="text-base md:text-2xl font-bold text-slate-200">
                 {state.data.population_distribution.ranges.length} ranges
               </p>
             </div>
-            <div className="bg-slate-700/50 p-4 rounded-lg">
-              <p className="text-sm text-slate-400">Top Growing Countries</p>
-              <p className="text-2xl font-bold text-slate-200">
+            <div className="bg-slate-700/50 p-3 md:p-4 rounded-lg flex flex-col justify-between">
+              <p className="text-xs md:text-sm text-slate-400 mb-1">Top Growing Countries</p>
+              <p className="text-base md:text-2xl font-bold text-slate-200">
                 {state.data.top_growing_countries.length}
               </p>
             </div>

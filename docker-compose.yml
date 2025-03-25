@@ -1,5 +1,9 @@
 version: '3.8'
 
+networks:
+  popscope_network:
+    driver: bridge
+
 services:
   api:
     build:
@@ -10,6 +14,8 @@ services:
     restart: always
     environment:
       - FILE_PATH=/app/country_development.tsv
+    networks:
+      - popscope_network
 
   frontend:
     build:
@@ -19,4 +25,6 @@ services:
       - "3001:3001"
     restart: always 
     environment:
-      - API_BASE_URL=http://localhost:8080/api
+      - API_BASE_URL=https://api.dogukangun.de/api
+    networks:
+      - popscope_network

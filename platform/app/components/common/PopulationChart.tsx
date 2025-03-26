@@ -34,11 +34,11 @@ const PopulationChart = ({ data, onDataPointClick, isGrowthRate = false }: Popul
   
   const chartData: ChartData<'line'> = {
     labels: years,
-    datasets: data.map((country) => ({
+    datasets: data.map((country, index) => ({
       label: country.country_name,
       data: years.map((year) => country.population[year] || null),
-      borderColor: `hsl(${Math.random() * 360}, 70%, 50%)`,
-      backgroundColor: `hsla(${Math.random() * 360}, 70%, 50%, 0.5)`,
+      borderColor: `hsl(${(index * 60) % 360}, 70%, 50%)`,
+      backgroundColor: `hsla(${(index * 60) % 360}, 70%, 50%, 0.5)`,
       tension: 0.3,
       pointRadius: 4,
       pointHoverRadius: 6,
@@ -55,19 +55,83 @@ const PopulationChart = ({ data, onDataPointClick, isGrowthRate = false }: Popul
     plugins: {
       legend: {
         position: 'top' as const,
+        labels: {
+          usePointStyle: true,
+          padding: 20,
+          font: {
+            size: 12,
+            family: 'system-ui'
+          },
+          color: '#e2e8f0', // text color
+          generateLabels: (chart) => {
+            const datasets = chart.data.datasets;
+            return datasets.map((dataset, i) => {
+              const meta = chart.getDatasetMeta(i);
+              const style = meta.hidden ? { backgroundColor: 'transparent' } : {};
+              return {
+                text: dataset.label || '',
+                fillStyle: dataset.borderColor as string,
+                strokeStyle: dataset.borderColor as string,
+                lineWidth: 2,
+                hidden: meta.hidden,
+                index: i,
+                ...style,
+                // Add visual indication of active/inactive state
+                textOpacity: meta.hidden ? 0.5 : 1,
+                textDecoration: meta.hidden ? 'line-through' : undefined,
+              };
+            });
+          },
+        },
+        onClick: (e, legendItem, legend) => {
+          if (legendItem.index !== undefined) {
+            const index = legendItem.index;
+            const ci = legend.chart;
+            const meta = ci.getDatasetMeta(index);
+            
+            // Toggle the hidden state
+            meta.hidden = meta.hidden === null ? !ci.data.datasets[index].hidden : !meta.hidden;
+            
+            // Trigger a chart update
+            ci.update();
+          }
+        },
       },
       title: {
         display: true,
         text: isGrowthRate ? 'Growth Rate Trends' : 'Population Trends Over Time',
+        color: '#e2e8f0',
+        font: {
+          size: 16,
+          weight: 'bold',
+          family: 'system-ui'
+        }
       },
       tooltip: {
+        backgroundColor: 'rgba(15, 23, 42, 0.9)',
+        titleColor: '#ffffff',
+        bodyColor: '#ffffff',
+        titleFont: {
+          size: 14,
+          weight: 'bold',
+          family: 'system-ui'
+        },
+        bodyFont: {
+          size: 12,
+          family: 'system-ui'
+        },
+        padding: 12,
+        cornerRadius: 8,
         callbacks: {
           label: (context) => {
             const value = context.parsed.y;
-            if (isGrowthRate) {
-              return `${context.dataset.label}: ${value?.toFixed(2)}%`;
+            if (value !== undefined && value !== null) {
+              if (isGrowthRate) {
+                return `${context.dataset.label}: ${value.toFixed(2)}%`;
+              }
+              return `${context.dataset.label}: ${value.toLocaleString()} people`;
             }
-            return `${context.dataset.label}: ${value?.toLocaleString()} people`;
+            return `${context.dataset.label}: No data`;
           },
         },
       },
@@ -77,14 +141,32 @@ const PopulationChart = ({ data, onDataPointClick, isGrowthRate = false }: Popul
         title: {
           display: true,
           text: 'Year',
+          color: '#94a3b8',
         },
+        grid: {
+          color: 'rgba(148, 163, 184, 0.1)',
+        },
+        ticks: {
+          color: '#94a3b8',
+          font: {
+            size: 11
+          }
+        }
       },
       y: {
         title: {
           display: true,
           text: isGrowthRate ? 'Growth Rate (%)' : 'Population',
+          color: '#94a3b8',
+        },
+        grid: {
+          color: 'rgba(148, 163, 184, 0.1)',
         },
         ticks: {
+          color: '#94a3b8',
+          font: {
+            size: 11
+          },
           callback: (value) => {
             if (typeof value === 'number') {
               return isGrowthRate ? `${value.toFixed(2)}%` : value.toLocaleString();
@@ -107,7 +189,7 @@ const PopulationChart = ({ data, onDataPointClick, isGrowthRate = false }: Popul
   };
 
   return (
-    <div className="w-full h-[400px] bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
+    <div className="w-full h-[400px] bg-slate-900 p-6 rounded-2xl border border-slate-700/50 shadow-lg">
       <Line data={chartData} options={options} />
     </div>
   );

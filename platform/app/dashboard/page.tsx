@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useReducer, useCallback, useMemo, useState } from 'react';
+import Flag from 'react-world-flags';
 import PopulationChart from '../components/common/PopulationChart';
 import GrowthMetrics from '../components/common/GrowthMetrics';
 import AnalyticsDashboard from '../components/analytics/AnalyticsDashboard';
@@ -15,7 +16,8 @@ import {
   ChevronUpIcon, 
   ChevronDownIcon, 
   MagnifyingGlassIcon, 
-  XMarkIcon 
+  XMarkIcon,
+  GlobeAltIcon
 } from '@heroicons/react/24/outline';
 
 const fadeInUp = {
@@ -32,6 +34,24 @@ const continents = [
   { name: 'Africa', color: 'bg-orange-500/20 hover:bg-orange-500/30 border-orange-500/50' },
   { name: 'Oceania', color: 'bg-teal-500/20 hover:bg-teal-500/30 border-teal-500/50' },
 ];
+
+const colors = {
+  primary: {
+    light: 'from-blue-400 to-indigo-500',
+    medium: 'from-blue-500 to-indigo-600',
+    dark: 'from-blue-600 to-indigo-700'
+  },
+  secondary: {
+    light: 'from-purple-400 to-pink-500',
+    medium: 'from-purple-500 to-pink-600',
+    dark: 'from-purple-600 to-pink-700'
+  },
+  accent: {
+    success: 'from-emerald-400 to-teal-500',
+    warning: 'from-amber-400 to-orange-500',
+    error: 'from-red-400 to-rose-500'
+  }
+};
 
 interface DashboardState {
   selectedCountries: string[];
@@ -266,12 +286,12 @@ export default function Dashboard() {
         initial="initial"
         animate="animate"
         variants={fadeInUp}
-        className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-8 rounded-2xl shadow-xl"
+        className="bg-gradient-to-r from-purple-800 via-indigo-800 to-violet-900 text-white p-8 rounded-2xl shadow-xl"
       >
         <h1 className="text-3xl font-bold mb-4">
           Population Trends Dashboard
         </h1>
-        <p className="text-blue-100 text-lg">
+        <p className="text-purple-100 text-lg">
           Explore and analyze population trends across different countries and time periods.
           Click on data points to view detailed metrics.
         </p>
@@ -334,10 +354,13 @@ export default function Dashboard() {
                     <button
                       key={countryCode}
                       onClick={() => dispatch({ type: 'SELECT_COUNTRY', payload: countryCode })}
-                      className="inline-flex items-center px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 transition-colors"
+                      className="inline-flex items-center px-3 py-2 rounded-lg bg-gradient-to-r from-emerald-500/20 to-teal-500/20 text-emerald-300 hover:from-emerald-500/30 hover:to-teal-500/30 transition-all border border-emerald-500/30 group"
                     >
+                      <div className="w-6 h-4 relative overflow-hidden rounded mr-2">
+                        <Flag code={countryCode} fallback={<GlobeAltIcon className="h-3 w-3 text-slate-400" />} />
+                      </div>
                       {country.country_name}
-                      <XMarkIcon className="h-4 w-4 ml-2" />
+                      <XMarkIcon className="h-4 w-4 ml-2 opacity-50 group-hover:opacity-100 transition-opacity" />
                     </button>
                   );
                 })}
@@ -388,13 +411,23 @@ export default function Dashboard() {
                             <button
                               key={country.country_code}
                               onClick={() => dispatch({ type: 'SELECT_COUNTRY', payload: country.country_code })}
-                              className={`w-full px-6 py-2 text-left hover:bg-slate-600/50 transition-colors ${
+                              className={`w-full px-6 py-3 text-left hover:bg-slate-600/50 transition-all flex items-center space-x-3 ${
                                 state.selectedCountries.includes(country.country_code)
-                                  ? 'text-emerald-300 bg-emerald-500/10'
-                                  : 'text-slate-300'
+                                  ? 'bg-gradient-to-r from-emerald-500/20 to-teal-500/20 text-emerald-300 border-l-4 border-emerald-500'
+                                  : 'text-slate-300 hover:border-l-4 hover:border-slate-400'
                               }`}
                             >
-                              {country.country_name}
+                              <div className="w-8 h-6 relative overflow-hidden rounded shadow-sm">
+                                <Flag code={country.country_code} fallback={<GlobeAltIcon className="h-4 w-4 text-slate-400" />} />
+                              </div>
+                              <span>{country.country_name}</span>
+                              {state.selectedCountries.includes(country.country_code) && (
+                                <span className="ml-auto text-emerald-400">
+                                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                  </svg>
+                                </span>
+                              )}
                             </button>
                           ))}
                         </div>
@@ -448,13 +481,23 @@ export default function Dashboard() {
                             <button
                               key={country.country_code}
                               onClick={() => dispatch({ type: 'SELECT_COUNTRY', payload: country.country_code })}
-                              className={`w-full px-6 py-2 text-left hover:bg-slate-600/50 transition-colors ${
+                              className={`w-full px-6 py-3 text-left hover:bg-slate-600/50 transition-all flex items-center space-x-3 ${
                                 state.selectedCountries.includes(country.country_code)
-                                  ? 'text-emerald-300 bg-emerald-500/10'
-                                  : 'text-slate-300'
+                                  ? 'bg-gradient-to-r from-emerald-500/20 to-teal-500/20 text-emerald-300 border-l-4 border-emerald-500'
+                                  : 'text-slate-300 hover:border-l-4 hover:border-slate-400'
                               }`}
                             >
-                              {country.country_name}
+                              <div className="w-8 h-6 relative overflow-hidden rounded shadow-sm">
+                                <Flag code={country.country_code} fallback={<GlobeAltIcon className="h-4 w-4 text-slate-400" />} />
+                              </div>
+                              <span>{country.country_name}</span>
+                              {state.selectedCountries.includes(country.country_code) && (
+                                <span className="ml-auto text-emerald-400">
+                                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                  </svg>
+                                </span>
+                              )}
                             </button>
                           ))}
                         </div>
